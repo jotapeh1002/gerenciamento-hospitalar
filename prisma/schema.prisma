@@ -1,0 +1,137 @@
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum typeConsultation{
+  consulta
+  exame
+  operacao 
+}
+
+enum typeProfessional{
+  medico
+  enfermeiro
+}
+
+enum typeRooms{
+  sala
+  quarto
+  salas_de_exame
+  consulta
+  atendimento_geral
+}
+
+model Manager{
+  id                          String  @id  @default(uuid())
+  name                        String 
+  rg                          String  @unique
+  password                    String
+  nivel                       Int                        @default(4)
+  @@map("manager")
+}
+
+model Receptionist{
+  id                          String  @id  @default(uuid())
+  name                        String 
+  rg                          String  @unique
+  nivel                       Int                        @default(4)
+  password                    String
+  @@map("receptionist")
+}
+
+model Professional {
+  id                          String                     @id @default(uuid())
+  professional_name           String
+  password                    String
+  typeProfessional            typeProfessional
+  status                      String @default("ativo")
+  rg                          String                     @unique
+  nivel                       Int                        @default(4)
+  specialties                 ProfessionalSpecialties[]
+  dutySchedule                DutySchedule[]
+  procredure                  Procedure[] 
+  @@map("professional")
+}
+
+model ProfessionalSpecialties {
+  id                          String     @id @default(uuid())
+  professionalId              String
+  specialtyId                 Int 
+  professional                Professional @relation(fields: [professionalId], references: [id])
+  specialty                   Specialties  @relation(fields: [specialtyId], references: [id])
+  @@map("professionalspecialties")
+}
+
+model Specialties {
+  id                          Int  @id @default(autoincrement())
+  name_specialty              String
+  professional                ProfessionalSpecialties[]
+  @@map("specialties")
+}
+
+model Patient{
+  id                          String  @id  @default(uuid())
+  name                        String 
+  rg                          String  @unique
+  procredure                  Procedure[]
+  @@map("patient")
+}
+
+model DutySchedule{
+  id                          String  @id  @default(uuid())
+  date_start                  DateTime 
+  date_finish                 DateTime 
+  shift                       String 
+  status                      String
+  observation                 String
+  professional_name_id        String
+  professional                Professional  @relation(fields: [professional_name_id], references: [id])
+  @@map("duty_schedule")
+}
+
+model Procedure{
+  id                         String  @id  @default(uuid())
+  professional_name_id       String 
+  patient_name_id            String
+  typeConsultation           typeConsultation
+  date_initial               DateTime 
+  hour_start                 DateTime 
+  hour_finish                DateTime 
+  status                     String
+  observation                String
+  professional               Professional  @relation(fields: [professional_name_id], references: [id])
+  patient                    Patient  @relation(fields: [patient_name_id], references: [id])
+  @@map("procedure")
+}
+
+model insumos{
+  id                          String  @id  @default(uuid())
+  insumos_name                String?
+  insumos_description         String?
+  insumos_quantity            Int
+  @@map("insumos")
+}
+
+model MedicalWards{
+  id                          String  @id  @default(uuid())
+  medical_wards_name          String
+  medicalrooms                MedicalRooms[]
+  @@map("medicalwards")
+}
+
+model MedicalRooms{
+  id                          String  @id  @default(uuid())
+  medical_wards_id            String?
+  typeRooms                   typeRooms?
+  room_name                   String?
+  quantity_space              Int?
+  medicalwards                MedicalWards?  @relation(fields: [medical_wards_id], references: [id])
+  @@map("medicalrooms")
+}
