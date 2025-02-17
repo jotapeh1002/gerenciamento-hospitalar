@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Esconde a barra de rolagem */
+.w-full.overflow-x-scroll::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari */
+  }
+  .w-full.overflow-x-scroll {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;     /* Firefox */
+  }
+  /* Ocultar barra de rolagem, mas permitir o scroll */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Para o IE e Edge */
+  scrollbar-width: none;      /* Para Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Para Chrome, Safari e outros navegadores WebKit */
+}
+
